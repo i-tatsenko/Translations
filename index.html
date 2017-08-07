@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <canvas id="canvas" width="400" height="400">
+
+  </canvas>
+  <button name="Rotate" onclick="drawer.rotate();">Rotate</button>
+
+  <script>
+    Math.radians = function(degrees) {
+      return degrees * Math.PI / 180;
+    };
+    window.onload = function() {
+      listenForMouse(document.getElementById('canvas'));
+    }
+
+    function listenForMouse(canvasElement) {
+      var canvas = canvasElement.getContext('2d');
+      window.drawer = new Drawer(canvas);
+      canvasElement.addEventListener('mousedown', startDrawing);
+      canvasElement.addEventListener('mousemove', draw);
+      canvasElement.addEventListener('mouseup', stopDrawing);
+    }
+
+    function startDrawing(event) {
+      window.isDrawing = true;
+      drawer.startLine([event.clientX, event.clientY]);
+    }
+
+    function stopDrawing() {
+      window.isDrawing = false;
+      drawer.stopLine();
+    }
+
+    function draw(event) {
+      if (window.isDrawing) {
+        drawer.drawTo([event.clientX, event.clientY]);
+      }
+    }
+
+    class Drawer {
+      constructor(canvasContext) {
+        this.ctx = canvasContext;
+        canvasContext.fillStyle = 'rgb(255, 0 ,0)';
+        canvasContext.strokeStyle = 'rgb(0, 255 ,0)';
+        this.points = [];
+      }
+
+      savePoint(point) {
+        this.points.push(point);
+      }
+
+      startLine(globalCoords) {
+        this.ctx.beginPath();
+        let point = this.toLocal(...globalCoords);
+        this.savePoint(point);
+        this.ctx.moveTo(...point);
+      }
+
+      stopLine() {
+        this.ctx.stroke();
+      }
+
+      toLocal(x, y) {
+        return [x - this.ctx.canvas.offsetLeft, y - this.ctx.canvas.offsetTop]
+      }
+
+      drawTo(globalCoords) {
+        let point = this.toLocal(...globalCoords);
+        this.savePoint(point);
+        this.ctx.lineTo(...point);
+      }
+
+      rotate() {
+        this.ctx.clearRect(0, 0, 400, 400);
+        let newPoints = [];
+        for (let point of this.points) {
+          let [x, y] = point;
+          x = x - 200;
+          y = y - 200;
+          let rad = Math.radians(15);
+          let newX = Math.cos(rad) * x - Math.sin(rad) * y;
+          let newY = Math.sin(rad) * x + Math.cos(rad) * y;
+          newPoints.push([newX + 200, newY + 200]);
+        }
+        console.log("points", this.points);
+        console.log("New points ", newPoints);
+        this.points = newPoints;
+        this.ctx.beginPath();
+        this.ctx.moveTo(...newPoints[0]);
+        for (let point of newPoints.slice(1)) {
+          this.ctx.lineTo(...point);
+        }
+        this.ctx.stroke();
+      }
+
+      drawPointGlobal(x, y) {
+        this.ctx.fillRect(...this.toLocal(x, y), 2, 2);
+      }
+    }
+
+    //var x = event.clientX - ctx.canvas.offsetLeft;
+    //var y = event.clientY - ctx.canvas.offsetTop;
+  </script>
+</body>
+
+</html>
