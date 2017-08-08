@@ -18,8 +18,9 @@ class Drawer {
 
     startLine(point) {
         this.ctx.beginPath();
-        this.savePoint(point);
-        this.ctx.moveTo(point.x, point.y);
+        let p = point.toCanvasPoint(this.ctx);
+        this.savePoint(p);
+        this.ctx.moveTo(p.x, p.y);
     }
 
     stopLine() {
@@ -27,16 +28,14 @@ class Drawer {
     }
 
     drawTo(point) {
-        this.savePoint(point);
-        this.ctx.lineTo(point.x, point.y);
+        let p = point.toCanvasPoint(this.ctx);
+        this.savePoint(p);
+        this.ctx.lineTo(p.x, p.y);
     }
 
-    rotate(rotationCenter = new CanvasPoint(this.canvas.width / 2,
-        this.canvas.height / 2),
-           degrees = 15) {
+    transform(transformer) {
         this.clear();
-        let rotation = new XZRotation(rotationCenter, degrees);
-        let newPoints = this.points.map(p => rotation.rotate(p));
+        let newPoints = this.points.map(p => transformer(p));
 
         this.points = newPoints;
         this.ctx.beginPath();
@@ -45,19 +44,8 @@ class Drawer {
         this.ctx.stroke();
     }
 
-}
-
-class GlobalDrawer extends Drawer {
-
-    startLine(globalPoint) {
-        return super.startLine(this.toCanvas(globalPoint))
+    getCenterPoint() {
+        return new CanvasPoint(this.canvas.width / 2, this.canvas.height / 2);
     }
 
-    drawTo(globalPoint) {
-        return super.drawTo(this.toCanvas(globalPoint))
-    }
-
-    toCanvas(globalPoint) {
-        return CanvasPoint.fromGlobal(globalPoint, this.ctx);
-    }
 }

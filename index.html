@@ -6,13 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
+<p>
+    To draw a figure use mouse.<br>
+    To rotate a figure in an XY coords use mouse wheel.<br>
+    To rotate a figure in an XZ coords use mouse wheel with and ALT key pressed.
+</p>
 <canvas id="canvas" width="400" height="400">
 
 </canvas>
-<button name="Rotate" onclick="drawer.rotate();">Rotate</button>
 <script src="drawer.js"></script>
 <script src="point.js"></script>
 <script src="rotation.js"></script>
@@ -26,10 +31,22 @@
     };
 
     function listenForMouse(canvasElement) {
-        window.drawer = new GlobalDrawer(canvasElement);
+        window.drawer = new Drawer(canvasElement);
         canvasElement.addEventListener('mousedown', startDrawing);
         canvasElement.addEventListener('mousemove', draw);
         canvasElement.addEventListener('mouseup', stopDrawing);
+        canvasElement.addEventListener('mousewheel', rotate)
+    }
+
+    function rotate(e) {
+        let rotationFunction;
+        if (e.altKey) {
+            rotationFunction = Rotation.rotatePerspective;
+        } else {
+            rotationFunction = Rotation.rotatePlain;
+        }
+        rotationFunction(e.deltaY / 10, drawer, GlobalPoint.fromEvent(e));
+        return false;
     }
 
     function startDrawing(event) {
