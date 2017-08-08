@@ -26,7 +26,7 @@ class GlobalPoint extends Point {
 
 class CanvasPoint extends Point {
 
-    constructor(x, y) {
-        super(x, y);
+    constructor(x, y, z) {
+        super(x, y, z);
     }
 }

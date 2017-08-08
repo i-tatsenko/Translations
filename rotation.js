@@ -8,11 +8,11 @@ class Rotation {
     }
 
     normalizeToCenter(point) {
-        return new CanvasPoint(point.x - this.center.x, point.y - this.center.y)
+        return new CanvasPoint(point.x - this.center.x, point.y - this.center.y, point.z)
     }
 
     removeNormalization(point) {
-        return new CanvasPoint(point.x + this.center.x, point.y + this.center.y)
+        return new CanvasPoint(point.x + this.center.x, point.y + this.center.y, point.z)
     }
 
     rotate(point) {
@@ -20,6 +20,7 @@ class Rotation {
         let newX = this.calculateNewX(p);
         let newY = this.calculateNewY(p);
         let newZ = this.calculateNewZ(p);
+        console.log("old z", p.z, "new z", newZ);
         return this.removeNormalization(new CanvasPoint(newX, newY, newZ));
     }
 
