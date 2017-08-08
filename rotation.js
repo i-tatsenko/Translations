@@ -20,7 +20,6 @@ class Rotation {
         let newX = this.calculateNewX(p);
         let newY = this.calculateNewY(p);
         let newZ = this.calculateNewZ(p);
-        console.log("old z", p.z, "new z", newZ);
         return this.removeNormalization(new CanvasPoint(newX, newY, newZ));
     }
 
